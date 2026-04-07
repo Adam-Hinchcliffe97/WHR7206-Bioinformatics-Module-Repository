@@ -17,4 +17,5 @@ The script (pedigree_plot.R) produces a JPEG figure (pedigree.jpeg) used to supp
 
 ## Files
 - trio_qc_filtering.sh — QC filtering script
-
+- Pedigree script.R - Pedigree generation script
+- pedigree.jpeg - Pedigree figure
