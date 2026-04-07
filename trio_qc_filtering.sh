@@ -38,7 +38,7 @@ bcftools view \
 tabix -p vcf step3.trio_complete.vcf.gz
 
 ##############################################
-#Annotation with ensembl VEP
+#Annotation with ensembl VEP - see annotation folder for details
 ##############################################
 
 # Allele‑frequency filtering -- Assuming AF is in INFO as AF or gnomAD_AF
