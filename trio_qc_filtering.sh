@@ -41,38 +41,36 @@ bcftools view \
 # Biological Prioritisation
 # Keep only coding / splice variants
 bcftools view \
-  -i 'INFO/CSQ~"missense_variant|stop_gained|frameshift_variant|splice_acceptor_variant|splice_donor_variant|start_lost"' \
+  -i 'INFO/CSQ~"|missense_variant|" || INFO/CSQ~"|stop_gained|" || INFO/CSQ~"|frameshift_variant|" || INFO/CSQ~"|splice_acceptor_variant|" || INFO/CSQ~"|splice_donor_variant|" || INFO/CSQ~"|start_lost|"' \
   step3.trio_complete.mane.vep.vcf \
-  -Oz -o step4.coding_only.vcf.g
+  -Oz -o step4.coding_only.vcf.gz
  tabix -p vcf step4.coding_only.vcf.gz
 
-# Prioritise canonical  OR  MANE transcripts
-bcftools view \
-  -i 'INFO/CSQ~"CANONICAL=YES" || INFO/CSQ~"MANE_SELECT|MANE_PLUS_CLINICAL"' \
-  step4.coding_only.vcf.gz \
-  -Oz -o step5.transcript_prioritised.vcf.gz
- tabix -p vcf step5.transcript_prioritised.vcf.gz
+# Create a numerical column for allele frequency to filter on
+bcftools +split-vep step4.coding_only.vcf.gz \
+  -c gnomADe_AF:Float \
+  -Oz -o step4.with_AF.vcf.gz
+tabix -p vcf step4.with_AF.vcf.gz
 
 # Allele‑frequency filtering -- filtering on gnomADe_AF
-# Create rare variant pool (AF ≤ 0.01)
+# Create rare variant pool (AF ≤ 0.01, including those with 0 or no entry)
 bcftools view \
-  -i 'INFO/CSQ~"gnomADe_AF=0(\\.0*)?" || INFO/CSQ~"gnomADe_AF=[0-9]\\.[0-9]*E-[0-9]+" || INFO/CSQ~"gnomADe_AF=\\."' \
-  step5.transcript_prioritised.vcf.gz \
-  -Oz -o step6.rare_variants.vcf.gz
-tabix -p vcf step6.rare_variants.vcf.gz
+  -i 'gnomADe_AF<=0.01 || gnomADe_AF="."' \
+  step4.with_AF.vcf.gz \
+  -Oz -o step5.rare_variants.vcf.gz
+ tabix -p vcf step5.rare_variants.vcf.gz
 
 # Create autosomal recessive candidate file
 bcftools view \
-  -r 1-22 \
-  step6.rare_variants.vcf.gz \
-  -Oz -o step7.AR_candidates.vcf.gz
- tabix -p vcf step7.AR_candidates.vcf.gz
+  -i 'CHROM!="X" && CHROM!="MT"' \
+  step5.rare_variants.vcf.gz \
+  -Oz -o step6.AR_candidates.vcf.gz
+ tabix -p vcf step6.AR_candidates.vcf.gz
 
 # X‑linked recessive (male proband, AF ≤ 0.001)
 # First restrict to chromosome X, then filter to 0.001
 bcftools view \
-  -r X \
-  -i 'INFO/CSQ~"gnomADe_AF=0(\\.0*)?" || INFO/CSQ~"gnomADe_AF=[0-9\\.e-]+E-[3-9]" || INFO/CSQ~"gnomADe_AF=\\."' \
-  step6.rare_variants.vcf.gz \
-  -Oz -o step8.XR_candidates.vcf.gz
- tabix -p vcf step8.XR_candidates.vcf.gz
+  -i 'CHROM=="X" && (gnomADe_AF<=0.001 || gnomADe_AF=".")' \
+  step5.rare_variants.vcf.gz \
+  -Oz -o step7.XR_candidates.vcf.gz
+ tabix -p vcf step7.XR_candidates.vcf.gz
