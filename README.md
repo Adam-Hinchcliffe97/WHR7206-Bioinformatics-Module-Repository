@@ -15,7 +15,14 @@ Quality control is performed before variant annotation, which is then followed b
 A pedigree diagram of the trio and unaffected older sister was generated in R using the kinship2 package.
 The script (pedigree_plot.R) produces a JPEG figure (pedigree.jpeg) used to support inheritance model selection in the assignment.
 
+## VEP Annotation
+Variants were annotated using Ensembl Variant Effect Predictor (VEP) v115, run via the official Ensembl Docker container in offline cache mode.
+The script `vep_annotation.sh` documents the exact command-line settings used, including GRCh37 assembly, canonical transcripts, and gnomAD allele frequencies.
+
+
 ## Files
 - trio_qc_filtering.sh — QC filtering script
 - Pedigree script.R - Pedigree generation script
 - pedigree.jpeg - Pedigree figure
+- vep_annotation.SH - VEP annotation command line
+
