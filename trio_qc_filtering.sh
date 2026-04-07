@@ -38,8 +38,8 @@ bcftools view \
 tabix -p vcf step3.trio_complete.vcf.gz
 
 ##############################################
-
-# NOT YET DONE, MAYBE NEEDS ANNOTATION
+#Annotation with ensembl VEP
+##############################################
 
 # Allele‑frequency filtering -- Assuming AF is in INFO as AF or gnomAD_AF
 
@@ -63,4 +63,3 @@ bcftools view \
   -i 'INFO/AF<=0.001' \
   chrX.vcf.gz \
   -Oz -o XR_candidates.vcf.gz
-
