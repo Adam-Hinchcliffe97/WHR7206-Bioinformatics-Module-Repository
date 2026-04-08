@@ -74,3 +74,10 @@ bcftools view \
   step5.rare_variants.vcf.gz \
   -Oz -o step7.XR_candidates.vcf.gz
  tabix -p vcf step7.XR_candidates.vcf.gz
+
+# De novo autosomal heterozygous in the proband only
+bcftools view \
+  -i 'GT[0]="0/1" && GT[1]="0/0" && GT[2]="0/0" && CHROM!="X" && CHROM!="MT"' \
+  step5.rare_variants.vcf.gz \
+  -Oz -o step8.denovo_candidates.vcf.gz
+ tabix -p vcf step8.denovo_candidates.vcf.gz
