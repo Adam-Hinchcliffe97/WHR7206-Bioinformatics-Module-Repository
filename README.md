@@ -11,7 +11,7 @@ The script executes:
 - Annotation of variants with canonical transcripts and MANE, gnomAD allele frequencies, associated genes and variant consequence
 - Filtering for biological relevance, retaining only coding or splice variants
 - Filtering for rare alleles (AF <0.01)
-- Identification of candidate variants for autosomal recessive inheritance and X-linked recessive inheritance
+- Identification of candidate variants for autosomal recessive inheritance, X-linked recessive inheritance and de novo mutation.
 
 ## Pedigree Generation
 A pedigree diagram of the trio and unaffected older sister was generated in R using the kinship2 package.
@@ -47,3 +47,5 @@ The script `vep_annotation.sh` documents the exact command-line settings used, i
 - step6.AR_candidates.vcf.gz.tbi — Tabix index for AR candidate file.
 - step7.XR_candidates.vcf.gz — X‑linked recessive candidate variants (chromosome X, AF ≤ 0.001).
 - step7.XR_candidates.vcf.gz.tbi — Tabix index for XR candidate file.
+- step8.denovo_candidates.vcf.gz - de novo mutation candidate file.
+- step8.denovo_candidates.vcf.gz.tbi - Tabix index for de novo candidate file.
