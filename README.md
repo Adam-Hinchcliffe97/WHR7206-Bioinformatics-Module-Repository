@@ -1,7 +1,7 @@
 # WHR7206 Bioinformatics Module Repository
 
 This repository contains a bash-based pipeline for quality filtering of a trio of whole exome sequencing variants in a VCF file.
-This is genotype and variant level quality control and was implemented using bcftools.
+This is genotype and variant level quality control and was implemented using bcftools. These variants were then annotated using Ensembl VEP and prioritised by integrating phenotypic information in the form of Human Phenotype Ontology (HPO) terms and the web Exomiser interface available here: https://exomiser.monarchinitiative.org/exomiser/submit?.
 
 ## Pipeline overview
 The script executes:
@@ -12,6 +12,7 @@ The script executes:
 - Filtering for biological relevance, retaining only coding or splice variants
 - Filtering for rare alleles (AF <0.01)
 - Identification of candidate variants for autosomal recessive inheritance, X-linked recessive inheritance and de novo mutation.
+- Integration of HPO terms and VCF file, PED file and phenopacket with .yml file for analyssi settings in docker implmentation of Exomiser CLI 15.0.0 (this and Exomiser CLI 13.2.0 would not function as expected so the web hosted interface was ultimately used).
 
 ## Pedigree Generation
 A pedigree diagram of the trio and unaffected older sister was generated in R using the kinship2 package.
@@ -21,6 +22,8 @@ The script (pedigree_plot.R) produces a JPEG figure (pedigree.jpeg) used to supp
 Variants were annotated using Ensembl Variant Effect Predictor (VEP) v115, run via the official Ensembl Docker container in offline cache mode.
 The script `vep_annotation.sh` documents the exact command-line settings used, including GRCh37 assembly, canonical transcripts, and gnomAD allele frequencies.
 
+## Exomiser Settings
+Exomiser files and settings are provided here as evidence of troubleshooting multiple different methods. Exomiser would only produce an output with the preset 'exome' settings, not allowing .yaml files for analysis settings. These settings were too strict and removed the primary candidate identified by the web interface Exomiser, and so this approach was abandoned.
 
 ## Files
 - trio_qc_filtering.sh — QC filtering script
@@ -30,6 +33,7 @@ The script `vep_annotation.sh` documents the exact command-line settings used, i
 - Family_trio_2026.vcf — Raw trio VCF provided by QMUL prior to any processing.
 - Family_trio_2026.vcf.gz — bgzip‑compressed raw VCF for efficient processing.
 - Family_trio_2026.vcf.gz.tbi — Tabix index for the compressed raw VCF.
+- Family_trio_2026.ped - pedigree file in correct format provided for assignment.
 - step1.pass.vcf.gz — Variants retained after applying the VCF‑level quality filter (FILTER=PASS).
 - step1.pass.vcf.gz.tbi — Tabix index for step 1 output.
 - step2.dp_gq_filtered.vcf.gz — Variants retained after genotype‑level QC filtering (DP ≥ 10, GQ ≥ 20).
@@ -49,3 +53,8 @@ The script `vep_annotation.sh` documents the exact command-line settings used, i
 - step7.XR_candidates.vcf.gz.tbi — Tabix index for XR candidate file.
 - step8.denovo_candidates.vcf.gz - de novo mutation candidate file.
 - step8.denovo_candidates.vcf.gz.tbi - Tabix index for de novo candidate file.
+- Exomiser_settings_FULL.txt - docker command lines used at each stage troubleshooting different settings.
+- application.properties - Exomiser configuration file specifying the local data directory, genome assembly (hg19), and data versions.
+- exomiser_analysis_job_AR.yaml - Custom Exomiser analysis YAML intended to model autosomal recessive inheritance with explicit filtering and prioritisation steps. This file was the main source of difficulty due to strict schema requirements in the Exomiser CLI versions.
+- phenopacket_AR.yaml - GA4GH phenopacket describing the proband phenotype using HPO terms, including pedigree information. This file was necessary for phenotype‑driven prioritisation (HiPhive) and matching Exomiser web‑based analysis, but proved difficult to integrate consistently with the CLI pipeline.
+- exomiser_AR_results.html - HTML output generated from a successful Exomiser Docker run using the preset exome analysis (rather than the custom analysis YAML). This represents the locally reproducible result and highlights differences compared with the Exomiser web application output.
