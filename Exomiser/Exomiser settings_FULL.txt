@@ -61,5 +61,17 @@ docker run -it -v "/mnt/c/Users/Adam_/Documents/exomiser_data:/exomiser-data" \
   --output-directory /data \
   --output-filename exomiser_AR_results
 
-# attempt with older version of exomiser CLI as used in tutorial 13.2.0 (needed to download older data 2303 packet instead of 2402
+# attempt with older version of exomiser CLI as used in tutorial 13.2.0 (needed to download older data 2303 packet instead of 2402 - this would not parse the .yml file - despite confirming correct syntax using this site: https://yamlchecker.com/
 
+docker run -it \
+  -v "/mnt/c/Users/Adam_/Documents/exomiser_data:/exomiser-data" \
+  -v "$(pwd)":/exomiser \
+  -e JAVA_TOOL_OPTIONS="-Dspring.config.location=file:/exomiser-data/application-12.3.0.properties" \
+  exomiser/exomiser-cli:13.2.0 \
+  --analysis /exomiser/exomiser_analysis_AR.yaml \
+  --vcf /exomiser/step6.AR_candidates.vcf.gz \
+  --assembly GRCh37 \
+  --ped /exomiser/Family_trio_2026.ped \
+  --sample /exomiser/phenopacket_AR.yaml \
+  --output-directory /exomiser/Results \
+  --output-filename exomiser_AR_result
