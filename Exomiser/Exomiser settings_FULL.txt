@@ -1,0 +1,65 @@
+## Exomiser docker prompts - multiple attempts with different settings, troubleshooting issues.
+
+# Initial attempt - preset exome settings and --analysis settings clashed
+docker run --rm -it \
+  -v "$(pwd)":/data \
+  -v /mnt/c/Users/Adam_/Documents/exomiser_data:/exomiser-data \
+  -v /mnt/c/Users/Adam_/Documents/exomiser_data/application.properties:/app/application.properties \
+  -e JAVA_TOOL_OPTIONS="-Dspring.config.location=file:/app/application.properties" \
+  exomiser/exomiser-cli \
+  analyse \
+  --preset exome \
+  --analysis-mode FULL \
+  --sample /data/phenopacket_AR.yaml \
+  --ped /data/Family_trio_2026.ped \
+  --output-directory /data \
+  --output-filename exomiser_AR_results
+
+# This one worked (but had preset exome settings and removed the primary candidate):
+
+
+docker run --rm -it \
+  -v "$(pwd)":/data \
+  -v /mnt/c/Users/Adam_/Documents/exomiser_data:/exomiser-data \
+  -v /mnt/c/Users/Adam_/Documents/exomiser_data/application.properties:/app/application.properties \
+  -e JAVA_TOOL_OPTIONS="-Dspring.config.location=file:/app/application.properties" \
+  exomiser/exomiser-cli \
+  analyse \
+  --preset exome \
+  --sample /data/phenopacket_AR.yaml \
+  --ped /data/Family_trio_2026.ped \
+  --output-directory /data \
+  --output-filename exomiser_AR_results
+
+# Preset 'exome' settings remove the following: CODING_TRANSCRIPT_INTRON_VARIANT, NON_CODING_TRANSCRIPT_INTRON_VARIANT, UPSTREAM_GENE_VARIANT, DOWNSTREAM_GENE_VARIANT, INTERGENIC_VARIANT - this would likely have removed the primary candidate variant as an intronic variant (immediately upstream of exon 11 in the CEP78 gene), as some of the transcripts were annotated intron_variant, non_coding_transcript_variant. The web based version does not remove these.
+
+# Running with genome instead of exome to see if this kept the variant - didn't work:
+
+docker run --rm -it \
+  -v "$(pwd)":/data \
+  -v /mnt/c/Users/Adam_/Documents/exomiser_data:/exomiser-data \
+  -v /mnt/c/Users/Adam_/Documents/exomiser_data/application.properties:/app/application.properties \
+  -e JAVA_TOOL_OPTIONS="-Dspring.config.location=file:/app/application.properties" \
+  exomiser/exomiser-cli \
+  analyse \
+  --preset genome \
+  --sample /data/phenopacket_AR.yaml \
+  --ped /data/Family_trio_2026.ped \
+  --output-directory /data \
+  --output-filename exomiser_AR_results
+
+
+# edit after tutorial from https://oboacademy.github.io/obook/tutorial/exomiser-tutorial/#via-docker - still didn't work
+docker run -it -v "/mnt/c/Users/Adam_/Documents/exomiser_data:/exomiser-data" \
+  -v "$(pwd)":/data \
+  -v "/mnt/c/Users/Adam_/Documents/exomiser_data/application.properties:/app/application.properties" \
+  -e JAVA_TOOL_OPTIONS="-Dspring.config.location=file:/app/application.properties" \
+  exomiser/exomiser-cli:15.0.0 \
+  analyse \
+  --sample /data/phenopacket_AR.yml \
+  --analysis /data/exomiser_analysis_job_AR.yml \
+  --output-directory /data \
+  --output-filename exomiser_AR_results
+
+# attempt with older version of exomiser CLI as used in tutorial 13.2.0 (needed to download older data 2303 packet instead of 2402
+
