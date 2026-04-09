@@ -1,0 +1,34 @@
+id: NA12878i
+subject:
+    id: NA12878i
+
+phenotypicFeatures:
+  - type:
+      id: HP:0000529
+  - type:
+      id: HP:0000662
+  - type:
+      id: HP:0032037
+  - type:
+      id: HP:0007754
+  - type:
+      id: HP:0011504
+  - type:
+      id: HP:0007737
+  - type:
+      id: HP:0008323
+  - type:
+      id: HP:0001757
+
+pedigree:
+  persons:
+    - individualId: NA12878i
+      paternalId: NA12891
+      maternalId: NA12892
+      sex: MALE
+      affectedStatus: AFFECTED
+
+htsFiles:
+  - uri: /data/step6.AR_candidates.vcf.gz
+    htsFormat: VCF
+    genomeAssembly: hg19
